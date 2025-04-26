@@ -48,12 +48,14 @@
         let gameRunning = true;
         
         const FACES = {
-            NORMAL: '😊',
+            NORMAL: '😐',
             HAPPY: '😃', 
             SCARED: '😨',
             DEAD: '💀'
         };
         let currentFace = FACES.NORMAL;
+        let deadFlashInterval;
+        let tears = [];
         
         function gameLoop() {
             if (!gameRunning) return;
@@ -71,6 +73,26 @@
         function clearCanvas() {
             ctx.fillStyle = '#111';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw and update tears
+            if (!gameRunning) {
+                ctx.font = `${gridSize}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                for (let i = tears.length - 1; i >= 0; i--) {
+                    const tear = tears[i];
+                    ctx.fillStyle = `rgba(0, 200, 255, ${tear.alpha})`;
+                    ctx.fillText('💧', tear.x, tear.y);
+                    
+                    tear.y += tear.speed;
+                    tear.alpha -= 0.02;
+                    
+                    if (tear.alpha <= 0) {
+                        tears.splice(i, 1);
+                    }
+                }
+            }
         }
         
         function drawSnake() {
@@ -111,9 +133,8 @@
                      snake[0].y <= 2 || snake[0].y >= tileCount-2) {
                 currentFace = FACES.SCARED;
             }
-            // Check if heading roughly toward food
-            else if ((dx > 0 && velocity.x > 0) || (dx < 0 && velocity.x < 0) ||
-                     (dy > 0 && velocity.y > 0) || (dy < 0 && velocity.y < 0)) {
+            // Check if directly lined up with food
+            else if ((dx === 0 && velocity.y !== 0) || (dy === 0 && velocity.x !== 0)) {
                 currentFace = FACES.HAPPY;
             } else {
                 currentFace = FACES.NORMAL;
@@ -173,6 +194,26 @@
         
         function gameOver() {
             gameRunning = false;
+            
+            // Start flashing skull
+            let flashState = true;
+            deadFlashInterval = setInterval(() => {
+                currentFace = flashState ? FACES.DEAD : '';
+                flashState = !flashState;
+            }, 200);
+            
+            // Create tears from snake body
+            for (let i = 0; i < snake.length; i++) {
+                if (Math.random() > 0.7) { // 70% chance to create a tear
+                    tears.push({
+                        x: snake[i].x * gridSize + gridSize/2,
+                        y: snake[i].y * gridSize + gridSize/2,
+                        alpha: 1,
+                        speed: Math.random() * 2 + 1
+                    });
+                }
+            }
+            
             ctx.fillStyle = 'white';
             ctx.font = '30px Arial';
             ctx.textAlign = 'center';
@@ -182,6 +223,8 @@
         }
         
         function resetGame() {
+            clearInterval(deadFlashInterval);
+            tears = [];
             snake = [{x: 10, y: 10}];
             velocity = {x: 0, y: 0};
             score = 0;
@@ -189,6 +232,7 @@
             gameSpeed = 100;
             placeFood();
             gameRunning = true;
+            currentFace = FACES.NORMAL;
             gameLoop();
         }
         
