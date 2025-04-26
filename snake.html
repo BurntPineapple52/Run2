@@ -46,6 +46,7 @@
         let score = 0;
         let gameSpeed = 100;
         let gameRunning = true;
+        let gameLoopTimeout;
         
         const FACES = {
             NORMAL: '😐',
@@ -68,16 +69,14 @@
         }
         
         function gameLoop() {
-            setTimeout(() => {
-                clearCanvas();
-                if (gameRunning) {
-                    moveSnake();
-                    checkCollision();
-                }
-                drawFood();
-                drawSnake();
-                gameLoop();
-            }, gameSpeed);
+            clearCanvas();
+            if (gameRunning) {
+                moveSnake();
+                checkCollision();
+            }
+            drawFood();
+            drawSnake();
+            gameLoopTimeout = setTimeout(gameLoop, gameSpeed);
         }
         
         function clearCanvas() {
@@ -256,6 +255,7 @@
         }
         
         function resetGame() {
+            clearTimeout(gameLoopTimeout);
             clearInterval(deadFlashInterval);
             tears = [];
             snake = [{x: 10, y: 10}];
