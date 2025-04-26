@@ -158,7 +158,28 @@
                      snake[0].y <= 2 || snake[0].y >= tileCount-2) {
                 currentFace = FACES.SCARED;
                 if (Math.random() < 0.1) { // 10% chance per frame to say something when scared
-                    const scaredWords = ['Help!', 'Too close!', 'Ahhh!', 'Wall!'];
+                    const scaredWords = [
+                        'FUCKING WALLS!', 
+                        'I HATE THIS MAZE!',
+                        'IM GONNA DIE!',
+                        'OH SHIT OH FUCK!',
+                        'MOM HELP ME!',
+                        'I SEE THE LIGHT!',
+                        'NOT LIKE THIS!',
+                        'MY LIFE FLASHED!',
+                        'I REGRET EVERYTHING!',
+                        'WHY DID I DO THIS?!',
+                        'I CAN SMELL COLORS!',
+                        'THE VOICES ARE LOUD!',
+                        'THEYRE IN THE WALLS!',
+                        'IM NOT READY TO DIE!',
+                        'I CAN SEE THE MATRIX!',
+                        'THE WALLS ARE CLOSING IN!',
+                        'I CAN TASTE FEAR!',
+                        'MY SOUL IS LEAVING!',
+                        'I SEE THE VOID!',
+                        'THEYRE COMING FOR ME!'
+                    ];
                     say(scaredWords[Math.floor(Math.random() * scaredWords.length)]);
                 }
             }
@@ -173,7 +194,33 @@
             
             if (head.x === food.x && head.y === food.y) {
                 score++;
-                const foods = ['Yum!', 'Delicious!', 'Nom nom!', 'Tasty!'];
+                const foods = [
+                    'FUCK YEAH FOOD!',
+                    'GIVE ME THAT SHIT!',
+                    'NOM NOM BITCH!',
+                    'I EAT FOR FREE!',
+                    'TASTES LIKE VICTORY!',
+                    'MORE MORE MORE!',
+                    'FEED ME SEYMOUR!',
+                    'I AM A GOD!',
+                    'THIS IS MY KINGDOM!',
+                    'I WILL CONSUME ALL!',
+                    'THE FOOD IS MINE!',
+                    'I AM BECOME SNAKE!',
+                    'FEASTING LIKE A KING!',
+                    'I EAT YOUR SOUL!',
+                    'THIS PLEASES ME!',
+                    'I AM THE ALPHA SNAKE!',
+                    'ALL SHALL LOVE ME!',
+                    'I AM THE DESTROYER!',
+                    'BOW BEFORE ME!',
+                    'I AM INEVITABLE!',
+                    'I DEVOUR WORLDS!',
+                    'MY HUNGER KNOWS NO BOUNDS!',
+                    'I WILL EAT THE SUN!',
+                    'YOUR PUNY FOOD FUELS ME!',
+                    'I AM THE CONSUMER OF REALITY!'
+                ];
                 say(foods[Math.floor(Math.random() * foods.length)]);
                 scoreElement.textContent = score;
                 placeFood();
@@ -225,7 +272,34 @@
         
         function gameOver() {
             gameRunning = false;
-            say('Nooo!');
+            const deathWords = [
+                'FUCKING BULLSHIT!',
+                'I HATE THIS GAME!',
+                'I WAS TOO YOUNG!',
+                'TELL MY STORY!',
+                'WHY GOD WHY?!',
+                'I SEE THE LIGHT!',
+                'CURSE YOU ALL!',
+                'I\'LL BE BACK!',
+                'THIS ISN\'T OVER!',
+                'I DIED AS I LIVED!',
+                'MY LEGACY LIVES ON!',
+                'AVENGE ME!',
+                'I WAS THE BEST!',
+                'THEY CHEATED!',
+                'I DEMAND A RECOUNT!',
+                'THIS IS A CONSPIRACY!',
+                'THE SYSTEM IS RIGGED!',
+                'I WAS SET UP!',
+                'I\'LL HAUNT YOU!',
+                'I REGRET NOTHING!',
+                'FUCK THIS GAME!',
+                'I\'LL SEE YOU IN HELL!',
+                'MY BLOOD IS ON YOUR HANDS!',
+                'THIS IS MURDER!',
+                'I DEMAND A TRIAL!'
+            ];
+            say(deathWords[Math.floor(Math.random() * deathWords.length)]);
             
             // Start flashing skull
             let flashState = true;
