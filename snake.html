@@ -57,6 +57,15 @@
         let deadFlashInterval;
         let tears = [];
         let speechBubbles = [];
+
+        function say(text) {
+            speechBubbles.push({
+                text: text,
+                x: snake[0].x * gridSize + gridSize/2,
+                y: snake[0].y * gridSize - 10,
+                alpha: 1
+            });
+        }
         
         function gameLoop() {
             if (!gameRunning) return;
@@ -149,6 +158,10 @@
             else if (snake[0].x <= 2 || snake[0].x >= tileCount-2 || 
                      snake[0].y <= 2 || snake[0].y >= tileCount-2) {
                 currentFace = FACES.SCARED;
+                if (Math.random() < 0.1) { // 10% chance per frame to say something when scared
+                    const scaredWords = ['Help!', 'Too close!', 'Ahhh!', 'Wall!'];
+                    say(scaredWords[Math.floor(Math.random() * scaredWords.length)]);
+                }
             }
             // Check if directly lined up with food
             else if ((dx === 0 && velocity.y !== 0) || (dy === 0 && velocity.x !== 0)) {
