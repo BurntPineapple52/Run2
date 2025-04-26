@@ -68,14 +68,14 @@
         }
         
         function gameLoop() {
-            if (!gameRunning) return;
-            
             setTimeout(() => {
                 clearCanvas();
-                moveSnake();
+                if (gameRunning) {
+                    moveSnake();
+                    checkCollision();
+                }
                 drawFood();
                 drawSnake();
-                checkCollision();
                 gameLoop();
             }, gameSpeed);
         }
