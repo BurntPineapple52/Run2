@@ -58,6 +58,7 @@
         let deadFlashInterval;
         let tears = [];
         let speechBubbles = [];
+        let fallingSegments = [];
 
         function say(text) {
             speechBubbles.push({
@@ -121,22 +122,60 @@
         }
         
         function drawSnake() {
-            // Draw body segments
-            ctx.fillStyle = 'lime';
-            snake.forEach(segment => {
-                ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize-2, gridSize-2);
-            });
+            if (gameRunning) {
+                // Draw normal snake when game is running
+                ctx.fillStyle = 'lime';
+                snake.forEach(segment => {
+                    ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize-2, gridSize-2);
+                });
 
-            // Draw face on head
-            ctx.font = `${gridSize}px Arial`;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillStyle = 'black';
-            ctx.fillText(
-                currentFace, 
-                snake[0].x * gridSize + gridSize/2, 
-                snake[0].y * gridSize + gridSize/2
-            );
+                // Draw face on head
+                ctx.font = `${gridSize}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillStyle = 'black';
+                ctx.fillText(
+                    currentFace, 
+                    snake[0].x * gridSize + gridSize/2, 
+                    snake[0].y * gridSize + gridSize/2
+                );
+            } else {
+                // Draw falling segments when dead
+                ctx.font = `${gridSize}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                for (let i = 0; i < fallingSegments.length; i++) {
+                    const seg = fallingSegments[i];
+                    
+                    ctx.save();
+                    ctx.translate(seg.x, seg.y);
+                    ctx.rotate(seg.rotation * Math.PI / 180);
+                    
+                    // Draw segment pieces
+                    ctx.fillStyle = 'lime';
+                    ctx.fillRect(-gridSize/2, -gridSize/2, gridSize-2, gridSize-2);
+                    
+                    // Draw skull face rotated on head segment
+                    if (i === 0) {
+                        ctx.fillStyle = 'black';
+                        ctx.fillText(FACES.DEAD, 0, 0);
+                    }
+                    
+                    ctx.restore();
+                    
+                    // Update falling animation
+                    seg.y += seg.speed;
+                    seg.rotation += seg.rotateSpeed;
+                    
+                    // Reset segments that fall off bottom
+                    if (seg.y > canvas.height + gridSize) {
+                        seg.y = -gridSize;
+                        seg.x = Math.random() * canvas.width;
+                        seg.speed = Math.random() * 2 + 1;
+                    }
+                }
+            }
         }
         
         function moveSnake() {
@@ -308,9 +347,18 @@
                 flashState = !flashState;
             }, 200);
             
-            // Create tears from snake body
+            // Break snake into falling segments
             for (let i = 0; i < snake.length; i++) {
-                if (Math.random() > 0.7) { // 70% chance to create a tear
+                fallingSegments.push({
+                    x: snake[i].x * gridSize + gridSize/2,
+                    y: snake[i].y * gridSize + gridSize/2,
+                    speed: Math.random() * 2 + 1,
+                    rotation: Math.random() * 360,
+                    rotateSpeed: Math.random() * 5 - 2.5
+                });
+                
+                // 70% chance to create a tear from segment
+                if (Math.random() > 0.3) {
                     tears.push({
                         x: snake[i].x * gridSize + gridSize/2,
                         y: snake[i].y * gridSize + gridSize/2,
@@ -332,6 +380,7 @@
             clearTimeout(gameLoopTimeout);
             clearInterval(deadFlashInterval);
             tears = [];
+            fallingSegments = [];
             snake = [{x: 10, y: 10}];
             velocity = {x: 0, y: 0};
             score = 0;
