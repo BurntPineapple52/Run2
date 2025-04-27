@@ -60,23 +60,42 @@
         let speechBubbles = [];
         let fallingSegments = [];
 
-        function say(text) {
-            // Calculate initial y position above snake head
+        function say(text, type = 'normal') {
+            // Calculate initial position
+            let xPos = snake[0].x * gridSize + gridSize/2;
             let yPos = snake[0].y * gridSize - 10;
+            
+            // Adjust for canvas edges
+            const textWidth = ctx.measureText(text).width;
+            if (xPos - textWidth/2 < 0) {
+                xPos = textWidth/2 + 5;
+            } else if (xPos + textWidth/2 > canvas.width) {
+                xPos = canvas.width - textWidth/2 - 5;
+            }
             
             // Check for existing bubbles and adjust position to avoid overlap
             for (const bubble of speechBubbles) {
-                const bubbleBottom = bubble.y + 20; // Approximate bubble height
+                const bubbleBottom = bubble.y + 20;
                 if (yPos >= bubble.y - 20 && yPos <= bubbleBottom) {
-                    yPos = bubble.y - 25; // Move above existing bubble
+                    yPos = bubble.y - 25;
                 }
+            }
+            
+            // Set color based on message type
+            let color;
+            switch(type) {
+                case 'scared': color = 'rgba(255, 100, 100, ${alpha})'; break;
+                case 'food': color = 'rgba(100, 255, 100, ${alpha})'; break;
+                case 'death': color = 'rgba(255, 50, 50, ${alpha})'; break;
+                default: color = 'rgba(255, 255, 255, ${alpha})';
             }
             
             speechBubbles.push({
                 text: text,
-                x: snake[0].x * gridSize + gridSize/2,
+                x: xPos,
                 y: yPos,
-                alpha: 1
+                alpha: 1,
+                color: color
             });
         }
         
@@ -110,7 +129,7 @@
             ctx.textAlign = 'center';
             for (let i = speechBubbles.length - 1; i >= 0; i--) {
                 const bubble = speechBubbles[i];
-                ctx.fillStyle = `rgba(255, 255, 255, ${bubble.alpha})`;
+                ctx.fillStyle = bubble.color.replace('${alpha}', bubble.alpha);
                 ctx.fillText(bubble.text, bubble.x, bubble.y);
                 
                 // Move bubble up slightly slower to maintain spacing
@@ -244,7 +263,7 @@
                         'I SEE THE VOID!',
                         'THEYRE COMING FOR ME!'
                     ];
-                    say(scaredWords[Math.floor(Math.random() * scaredWords.length)]);
+                    say(scaredWords[Math.floor(Math.random() * scaredWords.length)], 'scared');
                 }
             }
             // Check if directly lined up with food
@@ -285,7 +304,7 @@
                     'YOUR PUNY FOOD FUELS ME!',
                     'I AM THE CONSUMER OF REALITY!'
                 ];
-                say(foods[Math.floor(Math.random() * foods.length)]);
+                say(foods[Math.floor(Math.random() * foods.length)], 'food');
                 scoreElement.textContent = score;
                 placeFood();
                 
@@ -363,7 +382,7 @@
                 'THIS IS MURDER!',
                 'I DEMAND A TRIAL!'
             ];
-            say(deathWords[Math.floor(Math.random() * deathWords.length)]);
+            say(deathWords[Math.floor(Math.random() * deathWords.length)], 'death');
             
             // Start flashing skull
             let flashState = true;
