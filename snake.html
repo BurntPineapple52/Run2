@@ -164,7 +164,9 @@
                     
                     ctx.restore();
                     
-                    // Update falling animation
+                    // Update falling animation with physics
+                    seg.speed += seg.gravity; // Accelerate due to gravity
+                    seg.speed *= seg.friction; // Apply friction
                     seg.y += seg.speed;
                     seg.rotation += seg.rotateSpeed;
                     
@@ -172,7 +174,8 @@
                     if (seg.y > canvas.height + gridSize) {
                         seg.y = -gridSize;
                         seg.x = Math.random() * canvas.width;
-                        seg.speed = Math.random() * 2 + 1;
+                        seg.speed = Math.random() * 1 + 0.5;
+                        seg.rotation = Math.random() * 360;
                     }
                 }
             }
@@ -352,9 +355,11 @@
                 fallingSegments.push({
                     x: snake[i].x * gridSize + gridSize/2,
                     y: snake[i].y * gridSize + gridSize/2,
-                    speed: Math.random() * 2 + 1,
+                    speed: Math.random() * 1 + 0.5, // Slower initial speed
                     rotation: Math.random() * 360,
-                    rotateSpeed: Math.random() * 5 - 2.5
+                    rotateSpeed: (Math.random() * 3 - 1.5) * 0.5, // Slower rotation
+                    gravity: 0.05, // Added gravity for acceleration
+                    friction: 0.98 // Added friction for slowing down
                 });
                 
                 // 70% chance to create a tear from segment
