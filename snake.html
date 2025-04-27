@@ -61,10 +61,21 @@
         let fallingSegments = [];
 
         function say(text) {
+            // Calculate initial y position above snake head
+            let yPos = snake[0].y * gridSize - 10;
+            
+            // Check for existing bubbles and adjust position to avoid overlap
+            for (const bubble of speechBubbles) {
+                const bubbleBottom = bubble.y + 20; // Approximate bubble height
+                if (yPos >= bubble.y - 20 && yPos <= bubbleBottom) {
+                    yPos = bubble.y - 25; // Move above existing bubble
+                }
+            }
+            
             speechBubbles.push({
                 text: text,
                 x: snake[0].x * gridSize + gridSize/2,
-                y: snake[0].y * gridSize - 10,
+                y: yPos,
                 alpha: 1
             });
         }
@@ -102,8 +113,9 @@
                 ctx.fillStyle = `rgba(255, 255, 255, ${bubble.alpha})`;
                 ctx.fillText(bubble.text, bubble.x, bubble.y);
                 
-                bubble.y -= 0.5;
-                bubble.alpha -= 0.02;
+                // Move bubble up slightly slower to maintain spacing
+                bubble.y -= 0.3;
+                bubble.alpha -= 0.01;
                 
                 if (bubble.alpha <= 0) {
                     speechBubbles.splice(i, 1);
