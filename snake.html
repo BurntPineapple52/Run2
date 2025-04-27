@@ -132,9 +132,9 @@
                 ctx.fillStyle = bubble.color.replace('${alpha}', bubble.alpha);
                 ctx.fillText(bubble.text, bubble.x, bubble.y);
                 
-                // Move bubble up slightly slower to maintain spacing
-                bubble.y -= 0.3;
-                bubble.alpha -= 0.01;
+                // Move bubble up faster and fade quicker
+                bubble.y -= 0.6;
+                bubble.alpha -= 0.03;
                 
                 if (bubble.alpha <= 0) {
                     speechBubbles.splice(i, 1);
