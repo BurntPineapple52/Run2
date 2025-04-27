@@ -206,17 +206,18 @@
                     ctx.restore();
                     
                     // Update falling animation with physics
-                    seg.speed += seg.gravity; // Accelerate due to gravity
-                    seg.speed *= seg.friction; // Apply friction
-                    seg.y += seg.speed;
-                    seg.rotation += seg.rotateSpeed;
-                    
-                    // Reset segments that fall off bottom
-                    if (seg.y > canvas.height + gridSize) {
-                        seg.y = -gridSize;
-                        seg.x = Math.random() * canvas.width;
-                        seg.speed = Math.random() * 1 + 0.5;
-                        seg.rotation = Math.random() * 360;
+                    if (!seg.stopped) {
+                        seg.speed += seg.gravity; // Accelerate due to gravity
+                        seg.speed *= seg.friction; // Apply friction
+                        seg.y += seg.speed;
+                        seg.rotation += seg.rotateSpeed;
+                        
+                        // Stop segments when they hit bottom
+                        if (seg.y > canvas.height - gridSize/2) {
+                            seg.y = canvas.height - gridSize/2;
+                            seg.stopped = true;
+                            seg.rotateSpeed = 0;
+                        }
                     }
                 }
             }
@@ -396,11 +397,12 @@
                 fallingSegments.push({
                     x: snake[i].x * gridSize + gridSize/2,
                     y: snake[i].y * gridSize + gridSize/2,
-                    speed: Math.random() * 1 + 0.5, // Slower initial speed
+                    speed: Math.random() * 5 + 5, // Much faster initial speed
                     rotation: Math.random() * 360,
-                    rotateSpeed: (Math.random() * 3 - 1.5) * 0.5, // Slower rotation
-                    gravity: 0.05, // Added gravity for acceleration
-                    friction: 0.98 // Added friction for slowing down
+                    rotateSpeed: (Math.random() * 10 - 5), // Faster rotation
+                    gravity: 0.5, // Stronger gravity
+                    friction: 0.9, // Less friction
+                    stopped: false // Track if piece has hit bottom
                 });
                 
                 // 70% chance to create a tear from segment
